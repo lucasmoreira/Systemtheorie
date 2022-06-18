@@ -35,13 +35,13 @@ g = 9.81; r = 0.25; m = 1200; J = 1.5;
 lambda = @(v,w) max(min((r*w-v)/(r*w),1),0);
 u = @(lambda) c1*(1-exp(-c2*lambda))-c3*lambda;
 if teil ==1
-    M = @(t) (10000/m)+(j-1)*1000;
-    z_dot = @(t,z)[g*u(lambda(z(1),z(2)));
+    M = @(t) (10000+(j-1)*1000)/m;
+    z_dot = @(t,z)[g*u(lambda(z(1),z(2)));ch
     ((m*r)/J)*(-g*u(lambda(z(1),z(2)))+M(t))];
 else 
-    M = @(t) (10000/m)-sinpi(t*2)*4;
+    M = @(t,lambda,w) (10000-abs(sinpi(t)*lambda*10000)+abs(sinpi(t)*(1-lambda)*10000))/m;
     z_dot = @(t,z)[g*u(lambda(z(1),z(2)));
-    ((m*r)/J)*(-g*u(lambda(z(1),z(2)))+M(t))];
+    ((m*r)/J)*(-g*u(lambda(z(1),z(2)))+M(t,lambda(z(1),z(2)),z(2)))];
 end
 end
 
