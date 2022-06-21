@@ -58,13 +58,11 @@ Co(2,1);
 %https://de.mathworks.com/help/control/ref/ss.gram.html
 %https://de.mathworks.com/help/control/ref/ss.html
 %Slide 98
-sys = ss(A,B,C,0);
-opt = gramOptions('FreqIntervals',t_span);
-Ws = gram(sys,'c',opt);
+Ws = integral( @(x) expm(A*x)*B*((expm(A*x)*B)') , 0 , te, 'ArrayValued',true);
 
 %Eingangssignal
 % Slide 97
-u2 = @(t2) -B'*(expm(A'*(te-t2)))*(Ws^(-1)*(expm(A*te)*z0-ze ));
+u2 = @(t2) -B'*(expm(A'*(te-t2)))*(Ws\(expm(A*te)*z0-ze ));
 
 %Zustandsraummodell/DGL-System
 z_dot2 = @(t2,z2) A*z2 + B*u2(t2);
@@ -80,7 +78,7 @@ legend('show','Temperatur T1(t)-Tu','Temperatur T2(t)-Tu');
 xlabel('Zeit [s]');
 ylabel('Temperatur [°C]');
 
-nexttile 
+nexttile
 %Darstellung
 fplot(u2, [0, 15],'Linewidth',2); warning('off');
 %Legende
@@ -89,10 +87,11 @@ xlabel('Zeit [s]');
 ylabel('Leistung [W]');
 
 %Energie fur den Aufwarmvorgang
-integral( u2, 0, 15, 'ArrayValued', true); % = 1.6441e+06 
+integral( u2, 0, 15, 'ArrayValued', true); % = 1.6441e+06
 
-%Leistung in t = 15 ; Werkstucktemperatur zu halten
-u2(15); % = 2.2573e+05 W
+%Werkstucktemperatur zu halten
+% = 0 W, Kein Wärmeverlust an die Umgebung
+
 
 
 
